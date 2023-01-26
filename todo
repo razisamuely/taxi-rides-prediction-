@@ -1,0 +1,12 @@
+readme : 
+- Environment set up 
+
+python3 -m venv autofleet_venv
+source autofleet_venv/bin/activate
+
+python -m pip install --upgrade pip
+pip install ipykernel
+python -m ipykernel install --user --name=autofleet_venv
+
+
+- Gif 
