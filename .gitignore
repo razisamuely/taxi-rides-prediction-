@@ -135,4 +135,6 @@ times.csv
 # Venv
 autofleet_venv/*
 
+#Mac
+.DS_Store
 
