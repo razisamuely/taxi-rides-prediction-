@@ -131,6 +131,7 @@ dmypy.json
 #Datasets 
 rides.csv
 times.csv
+data/*
 
 # Venv
 autofleet_venv/*

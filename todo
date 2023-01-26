@@ -9,4 +9,11 @@ pip install ipykernel
 python -m ipykernel install --user --name=autofleet_venv
 
 
-- Gif 
+- Gif
+
+Insert each function into class, in a such way that the notebook would run one line of code in each task
+
+File of needed tests:
+
+Tests for week lag
+tests before and after joins
