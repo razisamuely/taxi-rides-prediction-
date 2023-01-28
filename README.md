@@ -1,4 +1,4 @@
-![ChessUrl]([https://githu](https://thumbs.gfycat.com/AdmiredMealyDassierat-size_restricted.gif))
+![ChessUrl](https://thumbs.gfycat.com/AdmiredMealyDassierat-size_restricted.gif)
 
 
 # Time Series Analysis for Taxi Demand Prediction
