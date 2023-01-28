@@ -27,7 +27,7 @@ We also perform Exploratory Data Analysis (EDA) to understand the distribution o
 
 missing target data points across dates
 
-
+?[missing](https://raw.githubusercontent.com/razisamuely/taxi-rides-prediction-/main/gifs/missing_targets.png)
 
 
 
