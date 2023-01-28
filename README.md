@@ -8,7 +8,7 @@ The goal of this project is to predict the demand for taxis at different hours o
 Initially, the project aims to answer basic questions about trends and causality in the data. Simple baselines are also created to establish a benchmark for comparison. The first baseline does not use any data from the test set, while the second one uses data from the test set. We also perform Exploratory Data Analysis (EDA) to understand the distribution of the data, identify outliers and missing values, and uncover any underlying patterns or trends.
 Example for question and answer is, Is the number of rides derived from a normal distribution?
 
-![ChessUrl](https://raw.githubusercontent.com/razisamuely/taxi-rides-prediction-/main/gifs/Sample_data_test_normality_dist.gif?token=GHSAT0AAAAAAB3FLVOJCQZ6NINCSVLKOP5MY6VRV7A)
+![ChessUrl](https://github.com/razisamuely/taxi-rides-prediction-/blob/main/gifs/Sample_data_test_normality_dist.gif)
 
 
 ## Modeling
