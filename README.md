@@ -25,7 +25,7 @@ Two models are created to predict taxi demand. The first model is a regular ML m
 Once the models are trained, we evaluate their performance using mean absolute error (MAE). For further research, additional metrics such as mean squared error (MSE) and root mean squared error (RMSE) would also be used. We also perform a visual comparison of the predicted values with the true values to understand the level of accuracy and identify any patterns or trends in the errors.
 
 ## Note
-Please note that this is a first and short iteration, and its main goal is to prove the concept. Given this, there is a lot of room for improvement and further research. Some things that could be added in the short term include: 
+Please note that this is a first and short iteration, and its main goal is to prove the concept. Given this, there is a lot of room for improvement and further research. Some things that could be added  include: 
 - Grid search to optimize model parameters
 - Comparison with other time series models such as ARIMA
 - Comparison with other ml models such as regression, loightGBM etc
@@ -35,6 +35,8 @@ Please note that this is a first and short iteration, and its main goal is to pr
 - Adding more features from external sources
 - Plotting the error against time
 - Adding a histogram of errors for better visualization.
+- Cross validation.
+- Using standard pipeline functionality that exists as part of the scikit-learn framework.
 
 ## Code Structure
 Please note that the code for this project is not written in classes as is typically done. Instead, the code is organized in a procedural manner for simplicity and ease of understanding.
