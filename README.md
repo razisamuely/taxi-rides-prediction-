@@ -16,13 +16,20 @@ Example for question and answer is, Is the number of rides derived from a normal
 
 
 
-Simple baselines are also created to establish a benchmark for comparison. The first baseline does not use any data from the test set, while the second one uses data from the test set. We also perform Exploratory Data Analysis (EDA) to understand the distribution of the data, identify outliers and missing values, and uncover any underlying patterns or trends.
+Simple baselines are also created to establish a benchmark for comparison. The first baseline does not use any data from the test set, while the second one uses data from the test set.
+An example of a baseline that uses different time periods for predicting future demand.
 
-
-
-Example for base line
 
 ![ChessUrl](https://github.com/razisamuely/taxi-rides-prediction-/blob/main/gifs/baseline_b_mae.gif)
+
+
+We also perform Exploratory Data Analysis (EDA) to understand the distribution of the data, identify outliers and missing values, and uncover any underlying patterns or trends.
+
+missing target data points across dates
+
+
+
+
 
 
 ## Modeling
