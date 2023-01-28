@@ -243,7 +243,7 @@ def plot_predicted_vs_actual_for_different_intervals_bl_b(df,
     return {"best_mae": best_mae, "best_mae_interval": best_mae_interval}
 
 
-def data_processing(df, value_column, cat_cols, lag_features, avg_features, drop_na_target=True):
+def data_processing_ml_approach(df, value_column, cat_cols, lag_features, avg_features, drop_na_target=True):
     # Add lag features
     for time_unit, lag in lag_features:
         df = add_time_unit_lag(df=df,
@@ -267,3 +267,39 @@ def data_processing(df, value_column, cat_cols, lag_features, avg_features, drop
         df = df[~df[value_column].isna()]
 
     return df
+
+
+def plot_history(history):
+    # summarize history for loss
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.title('model loss')
+    plt.ylabel('loss')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'test'], loc='upper left')
+    plt.show()
+
+
+def create_dataset(dataset, look_back=1):
+    dataX, dataY = [], []
+    for i in range(len(dataset) - look_back - 1):
+        a = dataset[i:(i + look_back), 0]
+        dataX.append(a)
+        dataY.append(dataset[i + look_back, 0])
+    return np.array(dataX), np.array(dataY)
+
+
+def plot_predicte_vs_actual(dataset, trainPredict, testPredict,  look_back=1):
+    # shift train predictions for plotting
+    trainPredictPlot = np.empty_like(dataset)
+    trainPredictPlot[:, :] = np.nan
+    trainPredictPlot[look_back:len(trainPredict) + look_back, :] = trainPredict
+    # shift test predictions for plotting
+    testPredictPlot = np.empty_like(dataset)
+    testPredictPlot[:, :] = np.nan
+    testPredictPlot[len(trainPredict) + (look_back * 2) + 1:len(dataset) - 1, :] = testPredict
+    # plot baseline and predictions
+    plt.plot(dataset)
+    plt.plot(trainPredictPlot)
+    plt.plot(testPredictPlot)
+    plt.show()
