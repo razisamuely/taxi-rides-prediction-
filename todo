@@ -26,3 +26,10 @@ there is much place for running EDA
 
 Add vertiacl lines for showing weekly trends and daily trends
 
+Plot of errors vs time
+
+Using catboost cause its handel also categorical features
+
+On production holding feature map for test set, not like research when we can convert features to categorical at once.
+
+Why do i using catboost , cause there is categorical data

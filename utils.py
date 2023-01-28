@@ -67,7 +67,7 @@ def queries_before_join(df_times, df_hourly_rides):
     print("\nDuplicates in `df_times`:", df_times.datetime.duplicated().sum())
 
     # How many out of df_hourly_rides is in df_times ?
-    print("\now many out of df_hourly_rides is in df_times ? ",
+    print("\nHow many out of df_hourly_rides is in df_times ? ",
           df_hourly_rides.created_on_hour.isin(df_times.datetime).sum())
 
     # Out of the df_times observations, what is the distribution of the times that do not appear in the df_hourly_rides?
@@ -76,9 +76,9 @@ def queries_before_join(df_times, df_hourly_rides):
           df_times[~df_times.datetime.isin(df_hourly_rides.created_on_hour)].datetime.dt.to_period('M').value_counts())
 
 
-def add_time_unit_lag(df, time_unit, lag):
+def add_time_unit_lag(df, time_unit, lag, value_column):
     df_lag = pd.concat([df[['datetime']] + pd.Timedelta(f"{lag}{time_unit}"),
-                        df[['rides']]],
+                        df[[value_column]]],
                        axis=1
                        )
 
@@ -170,10 +170,21 @@ def plot_predicted_vs_actual_for_different_intervals(df,
     return {"best_mae": best_mae, "best_mae_interval": best_mae_interval}
 
 
+def calculate_rolling_mean(df, value_col, index_col, mean_lag, time_unit):
+    return df[[value_col, index_col]].rolling(f'{mean_lag}{time_unit}', on=index_col).mean() \
+        .shift(periods=1)[value_col]
+
+
 def fit_predict_baseline_b(df, df_predict, k_last_hours, value_col):
-    df_predict = df_predict.set_index("datetime")
-    train = df[(df.datetime >= df_predict.index.min() - pd.Timedelta(hours=k_last_hours))].set_index("datetime")
-    df_predict[f"predicted"] = train[[value_col]].rolling(f'{k_last_hours}h').mean().shift(periods=1)
+    train = df[(df.datetime >= df_predict["datetime"].min() - pd.Timedelta(hours=k_last_hours))]
+    # df_predict[f"predicted"] = train[[value_col]].rolling(f'{k_last_hours}h').mean().shift(periods=1)
+
+    df_predict[f"predicted"] = calculate_rolling_mean(df=train,
+                                                      value_col=value_col,
+                                                      index_col="datetime",
+                                                      mean_lag=k_last_hours,
+                                                      time_unit='h')
+
     df_actual_vs_pred = df_predict.rename(columns={value_col: "actual"})
 
     mae = mean_absolute_error(df_actual_vs_pred.actual,
@@ -182,8 +193,77 @@ def fit_predict_baseline_b(df, df_predict, k_last_hours, value_col):
     return mae, df_actual_vs_pred
 
 
-# def plot_predicted_vs_actual_for_different_intervals_bl_b(df,
-#                                                           test,
-#                                                           days_back_range,
-#                                                           groupby_cols,
-#                                                           value_col):
+def plot_predicted_vs_actual_for_different_intervals_bl_b(df,
+                                                          test,
+                                                          hours_back_range,
+                                                          value_col,
+                                                          fig_size=(9, 6)):
+    sns.set(rc={'figure.figsize': fig_size})
+
+    mae_list = [np.nan] * hours_back_range
+    best_mae = 1000
+    best_mae_interval = hours_back_range
+    for i in range(hours_back_range, 0, -1):
+        mae, df_actual_vs_pred = fit_predict_baseline_b(df=df,
+                                                        df_predict=test,
+                                                        k_last_hours=i,
+                                                        value_col=value_col)
+        mae_list[i - 1] = mae
+
+        if mae < best_mae:
+            best_mae = mae
+            best_mae_interval = i
+
+        df_melt = df_actual_vs_pred[[f"predicted", "actual", "datetime"]].melt('datetime',
+                                                                               var_name='cols',
+                                                                               value_name='vals')
+
+        fig, ax = plt.subplots(2, 1)
+
+        sns.lineplot(
+            data=df_melt,
+            x="datetime", y="vals", hue="cols", ax=ax[0]
+        ).set(title=f"predicted VS actual last {i} hours, MAE ={int(mae)}")
+
+        ax[0].set_xticklabels(ax[0].get_xticklabels(), rotation=15, ha="right")
+
+        ax[1].plot(mae_list)
+
+        ax[1].set_title("Mean Absolute Error Trend")
+        ax[1].set_xlabel("Hours back interval")
+        ax[1].set_ylabel("MAE")
+        plt.xlim(-1, hours_back_range)
+        plt.ylim(-1, 250)
+        plt.tight_layout()
+        ax[1].invert_xaxis()
+        plt.show()
+
+        clear_output(wait=True)
+
+    return {"best_mae": best_mae, "best_mae_interval": best_mae_interval}
+
+
+def data_processing(df, value_column, cat_cols, lag_features, avg_features, drop_na_target=True):
+    # Add lag features
+    for time_unit, lag in lag_features:
+        df = add_time_unit_lag(df=df,
+                               time_unit=time_unit,
+                               lag=lag,
+                               value_column=value_column)
+    # Add rolling mean features
+    for mean_lag, time_unit in avg_features:
+        df[f'roll_avg_{mean_lag}{time_unit}_'] = calculate_rolling_mean(df=df,
+                                                                        value_col=value_column,
+                                                                        index_col="datetime",
+                                                                        mean_lag=mean_lag,
+                                                                        time_unit=time_unit)
+
+    # Convert columns to categorical
+    for col in cat_cols:
+        df[col] = df[col].astype('category')
+
+    # Filtering na target
+    if drop_na_target:
+        df = df[~df[value_column].isna()]
+
+    return df
