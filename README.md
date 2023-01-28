@@ -10,6 +10,8 @@ The goal of this project is to predict the demand for taxis at different hours o
 ## Initial Questions and Analysis
 Initially, the project aims to answer basic questions about trends and causality in the data. 
 Example for question and answer is, Is the number of rides derived from a normal distribution?
+
+
 ![ChessUrl](https://github.com/razisamuely/taxi-rides-prediction-/blob/main/gifs/Sample_data_test_normality_dist.gif)
 
 
