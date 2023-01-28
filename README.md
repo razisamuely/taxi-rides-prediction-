@@ -2,9 +2,14 @@
 
 ## Background
 The goal of this project is to predict the demand for taxis at different hours of the day. The data used for this project includes the number of rides per daytime and various features that can be extracted from the date and time, such as the day of the week, holidays etc or can join on the datetime column as season, weather, etc. The main objective is to identify patterns and trends in the data and use them to make accurate predictions about future taxi demand.
-s
+
+
 ## Initial Questions and Analysis
 Initially, the project aims to answer basic questions about trends and causality in the data. Simple baselines are also created to establish a benchmark for comparison. The first baseline does not use any data from the test set, while the second one uses data from the test set. We also perform Exploratory Data Analysis (EDA) to understand the distribution of the data, identify outliers and missing values, and uncover any underlying patterns or trends.
+Example for question and answer is, Is the number of rides derived from a normal distribution?
+
+![ChessUrl](https://raw.githubusercontent.com/razisamuely/taxi-rides-prediction-/main/gifs/Sample_data_test_normality_dist.gif?token=GHSAT0AAAAAAB3FLVOJCQZ6NINCSVLKOP5MY6VRV7A)
+
 
 ## Modeling
 Two models are created to predict taxi demand. The first model is a regular ML model (CatBoost Regressor) that uses independent samples to predict demand. This model is trained using a set of features such as the day of the week, season, and weather, and the goal is to find the best set of features that can improve the accuracy of the predictions. The second model is a time series model, specifically a vanilla LSTM architecture, which is used to show how to use models that are built for time series cases and can generate features by themselves. The LSTM model is trained on the time series data of taxi demand, and the goal is to see how well it can capture the temporal dependencies in the data. Additionally, we do not add additional features even though we believe it could improve the LSTM model, for the sake of simplicity.
