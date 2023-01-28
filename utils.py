@@ -57,6 +57,21 @@ def sample_and_plot_histogram(df, per_of_sample, value_columns, number_of_sample
 
 
 def queries_before_join(df_times, df_hourly_rides):
+    """
+    This function prints out various information about the two dataframes `df_times` and `df_hourly_rides`
+    before they are joined. The information includes:
+    - Number of unique time points in df_times
+    - Number of unique time points in df_hourly_rides
+    - Test for duplicates in `df_times`
+    - How many out of df_hourly_rides is in df_times?
+    - Out of the df_times observations, what is the distribution of the times that do not appear in the df_hourly_rides?
+
+    Parameters:
+    - df_times (DataFrame): Dataframe containing the time points
+    - df_hourly_rides (DataFrame): Dataframe containing the hourly rides
+
+    """
+
     # Number of unique times in df_times
     print("Number of unique time points in df_times:", len(df_times.datetime.unique()))
 
@@ -77,6 +92,18 @@ def queries_before_join(df_times, df_hourly_rides):
 
 
 def add_time_unit_lag(df, time_unit, lag, value_column):
+    """
+    This function adds a time unit lag to a specified value column in a given dataframe.
+    A new dataframe is created with the original datetime and value column, shifted by the specified lag and time unit.
+    The original dataframe is then merged with the new dataframe on the datetime column.
+
+    Parameters:
+    - df (DataFrame): Dataframe to add the lag to
+    - time_unit (str): Time unit to shift by ('s','m','h', 'd')
+    - lag (int): Number of time units to shift by
+    - value_column (str): Name of the value column to shift
+    """
+
     df_lag = pd.concat([df[['datetime']] + pd.Timedelta(f"{lag}{time_unit}"),
                         df[[value_column]]],
                        axis=1
@@ -96,6 +123,21 @@ def add_time_unit_lag(df, time_unit, lag, value_column):
 
 
 def fit_predict_baseline_a(df_fit, df_predict, groupby_cols, value_col):
+    """
+    This function takes in two dataframes, df_fit and df_predict, and calculates the average value per hour and day of week
+    in the df_fit dataframe using the groupby_cols and value_col specified. It then assigns these predictions to the
+    df_predict dataframe and renames the columns to "actual" and "predicted".
+
+    Parameters:
+    df_fit (DataFrame): The dataframe containing the data to fit the model on
+    df_predict (DataFrame): The dataframe containing the data to make predictions on
+    groupby_cols (list): A list of columns to groupby and calculate the average on
+    value_col (str): The column containing the values to calculate the average of
+
+    Returns:
+    DataFrame: A dataframe containing the actual and predicted values
+    """
+
     # Calculating average per hour and day of week
     dow_hour_pred = df_fit.groupby(groupby_cols).agg({"rides": "mean"})
 
@@ -113,6 +155,13 @@ def fit_predict_baseline_a(df_fit, df_predict, groupby_cols, value_col):
 
 
 def plot_predicted_vs_actual(df, fig_size=(9, 4)):
+    """
+    This function plots the predicted vs actual values
+    :param df: dataframe containing actual and predicted values
+    :param fig_size: figure size of the plot
+    :return:
+    """
+
     mae = mean_absolute_error(df.actual,
                               df.predicted)
     sns.set(rc={'figure.figsize': fig_size})
@@ -131,6 +180,16 @@ def plot_predicted_vs_actual_for_different_intervals(df,
                                                      days_back_range,
                                                      groupby_cols,
                                                      value_col):
+    """
+    This function plots the predicted vs actual values for different intervals
+    :param df: dataframe containing the data
+    :param test: dataframe containing the test data
+    :param days_back_range: range of days to test the intervals
+    :param groupby_cols: columns to group the data by
+    :param value_col: column containing the values to predict
+    :return: dictionary containing the best mean absolute error and the interval it was achieved at
+    """
+
     mae_list = [np.nan] * 46
     best_mae = 1000
     best_mae_interval = days_back_range
@@ -171,11 +230,48 @@ def plot_predicted_vs_actual_for_different_intervals(df,
 
 
 def calculate_rolling_mean(df, value_col, index_col, mean_lag, time_unit):
+    """
+    The calculate_rolling_mean function takes in a dataframe df,
+    a column name value_col which represents the value to calculate the rolling mean of,
+    a column name index_col representing the index to roll over,
+    a mean_lag representing the number of time units to average over,
+    and a time_unit representing the unit of time to use
+    (e.g. 'h' for hours, 'd' for days). It returns the rolling mean of the value_col shifted by one period.
+
+    Parameters:
+    df (pandas DataFrame): The dataframe on which the calculation should be performed
+    value_col (str): The name of the column for which the rolling mean should be calculated
+    index_col (str): The name of the column on which the rolling mean should be based
+    mean_lag (int): Number of time units to use for the rolling mean calculation
+    time_unit (str): The unit of time to use for the rolling mean calculation
+
+    Returns:
+    pandas Series: The rolling mean of the given value column
+    """
     return df[[value_col, index_col]].rolling(f'{mean_lag}{time_unit}', on=index_col).mean() \
         .shift(periods=1)[value_col]
 
 
 def fit_predict_baseline_b(df, df_predict, k_last_hours, value_col):
+    """The fit_predict_baseline_b function takes in a dataframe df and a dataframe df_predict,
+    a k_last_hours representing the number of hours to use as a lag,
+    and a value_col representing the value to calculate the rolling mean of.
+    The function then applies the rolling mean calculation using the calculate_rolling_mean function,
+    and predicts the df_predict using the train dataset,
+    then it returns the mean absolute error (MAE) of the
+    predicted values and the dataframe containing the actual and predicted values.
+
+    Parameters:
+        df (pandas DataFrame): The training data
+        df_predict (pandas DataFrame): The test data on which the prediction should be performed
+        k_last_hours (int): Number of hours to use for the rolling mean calculation
+        value_col (str): The name of the column for which the rolling mean should be calculated
+
+    Returns:
+        tuple: (MAE, DataFrame with actual and predicted values)
+
+    """
+
     train = df[(df.datetime >= df_predict["datetime"].min() - pd.Timedelta(hours=k_last_hours))]
     # df_predict[f"predicted"] = train[[value_col]].rolling(f'{k_last_hours}h').mean().shift(periods=1)
 
@@ -198,6 +294,15 @@ def plot_predicted_vs_actual_for_different_intervals_bl_b(df,
                                                           hours_back_range,
                                                           value_col,
                                                           fig_size=(9, 6)):
+    """The plot_predicted_vs_actual_for_different_intervals_bl_b function takes in a dataframe df, a dataframe test,
+    a range of hours hours_back_range, a value column value_col,
+    and a fig_size tuple representing the size of the plotted figure.
+    It then plots predicted vs actual values for different intervals of hours_back_range
+    and also plots a trend of mean absolute error for each interval.
+    It returns the best mean absolute error and the best interval.
+
+    """
+
     sns.set(rc={'figure.figsize': fig_size})
 
     mae_list = [np.nan] * hours_back_range
@@ -289,7 +394,7 @@ def create_dataset(dataset, look_back=1):
     return np.array(dataX), np.array(dataY)
 
 
-def plot_predicte_vs_actual(dataset, trainPredict, testPredict,  look_back=1):
+def plot_predicte_vs_actual(dataset, trainPredict, testPredict, look_back=1):
     # shift train predictions for plotting
     trainPredictPlot = np.empty_like(dataset)
     trainPredictPlot[:, :] = np.nan
@@ -303,3 +408,12 @@ def plot_predicte_vs_actual(dataset, trainPredict, testPredict,  look_back=1):
     plt.plot(trainPredictPlot)
     plt.plot(testPredictPlot)
     plt.show()
+
+
+def plot_feature_importance(model, X_test):
+    feature_importance = model.feature_importances_
+    sorted_idx = np.argsort(feature_importance)
+    fig = plt.figure(figsize=(7, 3))
+    plt.barh(range(len(sorted_idx)), feature_importance[sorted_idx], align='center')
+    plt.yticks(range(len(sorted_idx)), np.array(X_test.columns)[sorted_idx])
+    plt.title('Feature Importance');
