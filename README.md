@@ -10,6 +10,10 @@ Example for question and answer is, Is the number of rides derived from a normal
 
 ![ChessUrl](https://github.com/razisamuely/taxi-rides-prediction-/blob/main/gifs/Sample_data_test_normality_dist.gif)
 
+Example for base line
+
+![ChessUrl](https://github.com/razisamuely/taxi-rides-prediction-/blob/main/gifs/baseline_b_mae.gif)
+
 
 ## Modeling
 Two models are created to predict taxi demand. The first model is a regular ML model (CatBoost Regressor) that uses independent samples to predict demand. This model is trained using a set of features such as the day of the week, season, and weather, and the goal is to find the best set of features that can improve the accuracy of the predictions. The second model is a time series model, specifically a vanilla LSTM architecture, which is used to show how to use models that are built for time series cases and can generate features by themselves. The LSTM model is trained on the time series data of taxi demand, and the goal is to see how well it can capture the temporal dependencies in the data. Additionally, we do not add additional features even though we believe it could improve the LSTM model, for the sake of simplicity.
